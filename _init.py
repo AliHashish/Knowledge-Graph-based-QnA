@@ -50,7 +50,8 @@ class Main:
 
 if __name__ == "__main__":
     initialize = Main()
-    inputfile, inputQue, showGraph, showEntities = initialize.main(sys.argv[1:])
+    # inputfile, inputQue, showGraph, showEntities = initialize.main(sys.argv[1:])
+    inputfile, inputQue, showGraph, showEntities = "data.txt", "Who was born on November 11, 1974?", "n", "n"
 
     input_file = open(inputfile,"r+")
 

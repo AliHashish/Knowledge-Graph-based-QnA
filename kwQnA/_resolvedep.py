@@ -15,9 +15,9 @@ class change_nouns:
         sentences = []
         prev_subjs = []
 
-        temp_text = text
+        # temp_text = text
         # print([i for i, j in enumerate(temp_text) if j in ("(",")")])
-        pos_of_brackets = {pos:char for pos, char in enumerate(temp_text) if str(char) in ("(",")")}
+        # pos_of_brackets = {pos:char for pos, char in enumerate(temp_text) if str(char) in ("(",")")}
         # print(pos_of_brackets)
         # if pos_of_brackets:
         #     for key, val in pos_of_brackets:
