@@ -1,0 +1,7 @@
+nsubj: nominal subject: el subject el by3ml el 7aga (el fa3el)
+nsubjpass: passive nominal subject: el byt3ml 3leh el 7aga fl passive (cake: the cake was eaten)
+
+amod: adjectival modifier: zy el adjective 3ady, byewsef 7aga
+nmod: nominal modifier: byewsef shabah el adjective shwya, bs bywada7 el identitiy aktr, zy basketball player (kelmet basketball)
+
+poss: possessive modifier: His w Her w kda

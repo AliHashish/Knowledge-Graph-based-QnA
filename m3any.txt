@@ -1,2 +1,0 @@
-nsubj: nominal subject: el subject el by3ml el 7aga (el fa3el)
-nsubjpass: passive nominal subject: el byt3ml 3leh el 7aga fl passive (cake: the cake was eaten)

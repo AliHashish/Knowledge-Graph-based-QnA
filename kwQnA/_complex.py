@@ -16,19 +16,22 @@ class ComplexFunc:
             if i.label_ in ('DATE'):
                 xdate.append(str(i))
 
-            if i.label_ in ('GPE'):
+            if i.label_ in ('GPE'):     # organizations w asamy el 7agat el m3roofa w kda
                 xplace.append(str(i))
 
         return xdate, xplace
 
     def find_obj(self, sentence, place, time):
         object_list = []
-
+        buffer_obj = None
+        root_word = ""
         for word in sentence:
             # """OBJECT FINDING loop"""
-            if word.dep_ in ('obj', 'dobj', 'pobj'):
+            if word.dep_ in ('ROOT'):
+                root_word = str(word).lower()
+            root_condition = (root_word in ("am", "is", "are") and word.dep_ in ('attr'))
+            if word.dep_ in ('obj', 'dobj', 'pobj') or root_condition:
                 buffer_obj = word
-
                 if str(word) in place and word.nbor(-1).dep_ in ('prep') and str(word.nbor(-1)) == "of":
                     pass
                     # """ INDIA should be in place list + "of" "India" is there then it will come here """
@@ -37,9 +40,10 @@ class ComplexFunc:
                         # """ INDIA should not be in place list + INDIA should not be in time list """
                         # """ice-cream and mangoes"""
                         for child in word.subtree:
-                            if child.dep_ in ('conj', 'dobj', 'pobj', 'obj') and (str(child) not in time) and (str(child) not in place):
+                            child_root_condition = (root_word in ("am", "is", "are") and child.dep_ in ('attr'))
+                            if (child.dep_ in ('conj', 'dobj', 'pobj', 'obj') or child_root_condition) and (str(child) not in time) and (str(child) not in place):
                                 if [i for i in child.lefts]:
-                                    if child.nbor(-1).dep_ in ('nummod') and child.dep_ in ('dobj', 'obj','pobj'):
+                                    if child.nbor(-1).dep_ in ('nummod') and (child.dep_ in ('dobj', 'obj','pobj') or child_root_condition):
                                         child = str(child.nbor(-1)) + " " + str(child)
                                         object_list.append(str(child))
 
@@ -185,6 +189,8 @@ class ComplexFunc:
 
         subject_list = self.find_subj(sentence)
         object_list, buffer_obj = self.find_obj(sentence, place, time)
+        if not buffer_obj:
+            return None
         relation, aux_relation = self.find_relation(buffer_obj)
 
         self.ent_pairs = []
@@ -216,12 +222,18 @@ class ComplexFunc:
         return self.ent_pairs
 
     def question_pairs(self, question__):
-        # questionList = question__.split(" ")
-        # print(questionList)
+
+        # if word.dep_ in ('ROOT'):
+        #         root_word = str(word).lower()
+        # root_condition = (root_word in ("am", "is", "are") and word.dep_ in ('attr'))
 
         questionNLPed = self.nlp(question__)
+        for word in questionNLPed:
+            if word.dep_ in ('ROOT'):
+                root_word = str(word).lower()
+            root_condition = (root_word in ("am", "is", "are") and word.dep_ in ('attr'))
+
         maybe_object = ([i for i in questionNLPed if i.dep_ in ('obj', 'pobj', 'dobj')])
-        # print(maybe_object)
         maybe_place, maybe_time = [], []
         aux_relation = ""
         maybe_time, maybe_place = self.get_time_place_from_sent(questionNLPed)
@@ -229,34 +241,26 @@ class ComplexFunc:
 
         for obj in questionNLPed:
             objectNEW = obj
-            # print(obj.dep_)
 
             # FOR WHO
             if obj.dep_ in ('obj', 'dobj', 'pobj', 'xcomp') and str(obj).lower() != "what":
                 buffer_obj = obj
 
                 if obj.dep_ in ('xcomp') and obj.nbor(-1).dep_ in ('aux') and obj.nbor(-2).dep_ in ('ROOT'):
-                    # print("here")
                     continue
 
                 if str(obj) in maybe_place and obj.nbor(-1).dep_ in ('prep') and str(obj.nbor(-1)) == "of":
-                    # """ INDIA should be in place list + "of" "India" is there then it will come here """
                     pass
                 else:
                     if str(obj) not in maybe_time and str(obj) not in maybe_place:
-                        # INDIA should not be in place list + INDIA should not be in time list
-                        # ice-cream and mangoes
                         for child in obj.subtree:
-                            # print(child)
                             if child.dep_ in ('conj', 'dobj', 'pobj', 'obj'):
                                 if [i for i in child.lefts]:
                                     if child.nbor(-1).dep_ in ('punct') and child.nbor(-2).dep_ in ('compound'):
-                                        # """ice-cream"""
                                         child = str(child.nbor(-2)) + str(child.nbor(-1)) + str(child)
                                         object_list.append(str(child))
 
                                     elif child.nbor(-1).dep_ in ('compound'):
-                                        # print(child)
                                         child_with_comp = ""
                                         for i in child.subtree:
                                             if i.dep_ in ('compound', 'nummod','quantmod'):
@@ -268,12 +272,9 @@ class ComplexFunc:
                                                 break
                                         child = child_with_comp + " " + str(child)
 
-                                        # ice cream
-                                        # print(child)
                                         object_list.append(str(child))
 
                                     elif child.nbor(-1).dep_ in ('det'):
-                                        # The Taj Mahal
                                         object_list.append(str(child))
 
                                 elif [i for i in child.rights]:
@@ -288,7 +289,6 @@ class ComplexFunc:
                                                 object_list.extend( [ str(a.text) ] )
 
                                 else:
-                                    # icecream
                                     if str(child) not in object_list:
                                         object_list.append(str(child))
 
@@ -302,52 +302,26 @@ class ComplexFunc:
                             object_list.append(str(obj))
 
 
-                # print(object_list)
                 obj = object_list[-1]
-                # # print(obj)
-                # # print(obj.nbor(1))
-                # try:
-                #     if obj.nbor(-1).pos_ in ('PUNCT') and obj.nbor(-2).pos_ in ('NOUN'):
-                #         obj = ' '.join((str(obj.nbor(-2)), str(obj)))
-                #     elif obj.nbor(-1).pos_ in ('NOUN'):
-                #         obj = ' '.join( (str(obj.nbor(-1)), str(obj) ))
-                #     # elif obj.nbor(1).pos_ in ('ROOT'):
-                #         # pass
-                # except IndexError:
-                #     pass
-
-                # elif obj.nbor(1).pos_ in :
-                    # print(obj.nbor(1).pos_)
-
-                # print(obj)
                 relation = [w for w in objectNEW.ancestors if w.dep_ =='ROOT']
                 if relation:
                     relation = relation[0]
                     sp_relation = relation
-                    # print(sp_relation)
-                    # print(relation)
                     if relation.nbor(1).pos_ in ('ADP', 'PART', 'VERB'):
                         if relation.nbor(2).dep_ in ('xcomp'):
                             aux_relation = str(relation.nbor(2))
                             relation = str(relation)+" "+str(relation.nbor(1))
-                        else:# print(relation.nbor(2).dep_)
+                        else:
                             relation = str(relation)
-                            # print(relation)
 
                     subject = [a for a in sp_relation.lefts if a.dep_ in ('subj', 'nsubj','nsubjpass')]  # identify subject nodes
-                    # print(subject)
                     if subject:
                         subject = subject[0]
-                        # print(subject)
-                        # subject, subject_type = self.prepro.refine_ent(subject, question__)
-                        # print(subject)
                     else:
                         subject = 'unknown'
                 else:
                     relation = 'unknown'
 
-                # obj, object_type = self.prepro.refine_ent(obj, question__)
-                # print(subject, relation, obj)
                 self.ent_pairs = []
 
                 if maybe_time and maybe_place:
@@ -358,8 +332,6 @@ class ComplexFunc:
                     self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(obj).lower(), str("").lower(), str(maybe_place[0]).lower()])
                 else:
                     self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(obj).lower(), str("").lower(), str("").lower()])
-                # ent_pairs.append([str(subject), str(relation), str(obj)])
-                # print(self.ent_pairs)
                 return self.ent_pairs
 
             elif str(obj).lower() == "what":
@@ -371,30 +343,16 @@ class ComplexFunc:
                         if relation.nbor(2).dep_ in ('xcomp'):
                             aux_relation = str(relation.nbor(2))
                             relation = str(relation)+" "+str(relation.nbor(1))
-                        else:# print(relation.nbor(2).dep_)
+                        else:
                             relation = str(relation)
-                            # print(relation)
 
                     subject = self.find_subj(questionNLPed)
-                    # print(subject)
                     subject = subject[-1]
 
-                    # subject = [a for a in sp_relation.lefts if a.dep_ in ('subj', 'nsubj','nsubjpass')]  # identify subject nodes
-                    # print(subject)
-                    # if subject:
-                        # subject = subject[0]
-                        # print(subject)
-                        # subject, subject_type = self.prepro.refine_ent(subject, question__)
-                        # print(subject)
-                    # else:
-                        # subject = 'unknown'
                 else:
                     relation = 'unknown'
 
-                # obj, object_type = self.prepro.refine_ent(obj, question__)
-                # print(obj)
                 self.ent_pairs = []
-                # print(subject,relation,obj)
                 if maybe_time and maybe_place:
                     self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(obj).lower(), str(maybe_time[0]).lower(), str(maybe_place[0]).lower()])
                 elif maybe_time:
@@ -403,53 +361,28 @@ class ComplexFunc:
                     self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(obj).lower(), str("").lower(), str(maybe_place[0]).lower()])
                 else:
                     self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(obj).lower(), str("").lower(), str("").lower()])
-                # ent_pairs.append([str(subject), str(relation), str(obj)])
-                # print(self.ent_pairs)
                 return self.ent_pairs
 
             elif obj.dep_ in ('advmod'):
-                # print(str(obj).lower())
                 if str(obj).lower() == 'where':
                     relation = [w for w in obj.ancestors if w.dep_ =='ROOT']
-                    # print(relation)
                     if relation:
                         relation = relation[0]
                         sp_relation = relation
-                        # print(relation)
                         if relation.nbor(1).pos_ in ('ADP', 'PART', 'VERB'):
                             if relation.nbor(2).dep_ in ('xcomp'):
                                 aux_relation = str(relation.nbor(2))
                                 relation = str(relation)+" "+str(relation.nbor(1))
-                            else:# print(relation.nbor(2).dep_)
+                            else:
                                 relation = str(relation)
-                                # print(relation)
-
-                        # for left_word in sp_relation.lefts:
-                        #     if left_word.dep_ in ('subj', 'nsubj','nsubjpass'):
-                        #         if [i for i in left_word.lefts]:
-                        #             for left_of_left_word in left_word.lefts:
-                        #                 subject = str(left_of_left_word) + " " + str(left_word)
-                        #         else:
-                        #             subject = str(left_word)
-
+                                
                         subject = self.find_subj(questionNLPed)
-                        # print(subject)
                         subject = subject[-1]
 
-                        # subject = [a for a in sp_relation.lefts if a.dep_ in ('subj', 'nsubj','nsubjpass')]  # identify subject nodes
-                        # # print(subject)
-                        # if subject:
-                        #     subject = subject[0]
-                        #     # print(subject)
-                        #     # subject, subject_type = self.prepro.refine_ent(subject, question__)
-                        #     # print(subject)
-                        # else:
-                        #     subject = 'unknown'
                     else:
                         relation = 'unknown'
 
                     self.ent_pairs = []
-                    # print(obj, subject, relation)
                     if maybe_object:
                         if maybe_time and maybe_place:
                             self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(maybe_object[-1]).lower(), str(maybe_time[0]).lower(), str("where").lower()])
@@ -469,48 +402,32 @@ class ComplexFunc:
                         else:
                             self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str("").lower(), str("").lower(), str("where").lower()])
 
-                    # ent_pairs.append([str(subject), str(relation), str(obj)])
-                    # print(self.ent_pairs)
 
                     return self.ent_pairs
 
                 elif str(obj).lower() == 'when':
-                    # print(obj)
                     relation = [w for w in obj.ancestors if w.dep_ =='ROOT']
-                    # print(relation)
                     if relation:
                         relation = relation[0]
                         sp_relation = relation
-                        # print(relation)
                         if relation.nbor(1).pos_ in ('ADP', 'PART', 'VERB'):
-                            # print(relation.nbor(1).pos_)
                             if relation.nbor(2).dep_ in ('xcomp'):
                                 relation = ' '.join((str(relation), str(relation.nbor(1)), str(relation.nbor(2))))
-                            else:# print(relation.nbor(2).dep_)
+                            else:
                                 relation = ' '.join((str(relation), str(relation.nbor(1))))
-                                # print(relation)
 
-                        for left_word in sp_relation.lefts:
+                        for left_word in sp_relation.children:
                             if left_word.dep_ in ('subj', 'nsubj','nsubjpass'):
                                 if [i for i in left_word.lefts]:
                                     for left_of_left_word in left_word.lefts:
                                         subject = str(left_of_left_word) + " " + str(left_word)
                                 else:
                                     subject = str(left_word)
-                        # subject = [a for a in sp_relation.lefts if a.dep_ in ('subj', 'nsubj','nsubjpass')]  # identify subject nodes
-                        # # print(subject)
-                        # if subject:
-                        #     subject = subject[0]
-                        #     # print(subject)
-                        #     # subject, subject_type = self.prepro.refine_ent(subject, question__)
-                        #     # print(subject)
-                        # else:
-                        #     subject = 'unknown'
+                        
                     else:
                         relation = 'unknown'
 
                     self.ent_pairs = []
-                    # print(obj, subject, relation)
                     if maybe_object:
                         if maybe_time and maybe_place:
                             self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(maybe_object[-1]).lower(), str("when").lower(), str(maybe_place[0]).lower()])
@@ -530,6 +447,5 @@ class ComplexFunc:
                         else:
                             self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str("").lower(), str("when").lower(), str("").lower()])
 
-                    # ent_pairs.append([str(subject), str(relation), str(obj)])
-                    # print(self.ent_pairs)
+
                     return self.ent_pairs

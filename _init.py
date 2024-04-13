@@ -51,12 +51,17 @@ class Main:
 if __name__ == "__main__":
     initialize = Main()
     # inputfile, inputQue, showGraph, showEntities = initialize.main(sys.argv[1:])
-    inputfile, inputQue, showGraph, showEntities = "data.txt", "Who was born on November 11, 1974?", "n", "n"
-
+    # inputfile, inputQue, showGraph, showEntities = "data.txt", "Who was born on November 11, 1974?", "n", "n"
+    # inputfile, inputQue, showGraph, showEntities = "data.txt", "When was Leonardo Dicaprio born?", "n", "n"
+    # inputfile, inputQue, showGraph, showEntities = "data.txt", "When was World War II?", "n", "n"
+    inputfile, inputQue, showGraph, showEntities = "data.txt", "who is a doctor?", "n", "n"
+    
+    
     input_file = open(inputfile,"r+")
 
     if inputfile:
-        refined_text = initialize.getEntity.preprocess_text(input_file)
+
+        refined_text = initialize.getEntity.preprocess_text(input_file, inputQue)
 
         dataEntities, numberOfPairs = initialize.getEntity.get_entity(refined_text)
         """ getentity return dataentity[0] """
@@ -76,6 +81,7 @@ if __name__ == "__main__":
                 print("Question: ",inputQue)
                 print("Answer:   ",outputAnswer)
                 print("------------------------------------------------------------------------------------------------------------")
-
+        else:
+            print("Not Applicable - mfeesh entities")
     else:
         print("No Input file detected")

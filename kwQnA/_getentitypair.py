@@ -16,12 +16,12 @@ class GetEntity:
         self.nlp = spacy.load('en_core_web_sm')
         self.change = change_nouns()
 
-    def preprocess_text(self, input_file):
+    def preprocess_text(self, input_file, question_mloosh_lazma=""):
         text_strip = [text.strip() for text in input_file]
         preprocessed_text = [text for text in text_strip if text not in ('', ' ')]
         text = " ".join(preprocessed_text)
         # """ ADDED CUSTOM SCRIPT """
-        text = self.change.resolved(text)
+        text = self.change.resolved(text, question_mloosh_lazma)       # dyh el bt3ml tinternational
         # """ ___________________ """
         text = self.nlp(text)
         return text

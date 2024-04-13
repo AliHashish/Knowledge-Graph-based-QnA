@@ -20,6 +20,7 @@ class QuestionAnswer:
 
     def findanswer(self, question, c):
         p = self.complex.question_pairs(question)
+        print(p)
 
         if p == [] or p is None:
             return "Not Applicable"
@@ -69,11 +70,11 @@ class QuestionAnswer:
                     if self.p.singular_noun(objectQ):
                         objectQ = self.p.singular_noun(objectQ)
 
-                    if objectS == objectQ:
+                    if objectS in objectQ or objectQ in objectS:
                         if str(pair[4]) != "":
                             timeS = [str(loaded[str(i)]["time"]).lower()]
                             # print(timeQ, timeS)
-                            if timeQ in timeS:
+                            if timeQ in timeS or timeS in timeQ:
                                 answer_subj = loaded[str(i)]["source"]
                                 subList.append(answer_subj)
                         else:
@@ -83,10 +84,10 @@ class QuestionAnswer:
                     objectS = loaded[str(i)]["target"]
                     objectS = re.sub('-', ' ', objectS)
 
-                    if objectS == objectQ:
+                    if objectS in objectQ or objectQ in objectS:
                         if str(pair[4]) != "":
                             timeS = [str(loaded[str(i)]["time"]).lower()]
-                            if timeQ in timeS:
+                            if timeQ in timeS or timeS in timeQ:
                                 answer_subj = loaded[str(i)]["source"]
                                 subList.append(answer_subj)
                         else:
@@ -94,7 +95,7 @@ class QuestionAnswer:
                             subList.append(answer_subj)
 
 
-            answer_subj = ",".join(subList)
+            answer_subj = ", ".join(subList)
             if answer_subj == "":
                 return "None"
             return answer_subj
@@ -105,7 +106,7 @@ class QuestionAnswer:
             for i in loaded:
                 subjectS = loaded[str(i)]["source"]
                 # print(subjectQ, subjectS)
-                if subjectQ == subjectS:
+                if subjectQ in subjectS or subjectS in subjectQ:
                     relationS = [relation for relation in self.nlp(loaded[str(i)]["relation"])]
                     relationS = [i.lemma_ for i in relationS]
                     if len(relationS) > 1:
@@ -117,10 +118,10 @@ class QuestionAnswer:
                         if str(pair[5]) != "":
                             placeS = [str(place).lower() for place in self.nlp(loaded[str(i)]["place"])]
                             # print(placeQ, placeS)
-                            if placeQ in placeS:
+                            if placeQ in placeS or placeS in placeQ:
                                 if str(pair[4]) != "":
                                     timeS = [str(time).lower() for time in self.nlp(loaded[str(i)]["time"])]
-                                    if timeQ in timeS:
+                                    if timeQ in timeS or timeS in timeQ:
                                         answer_subj = loaded[str(i)]["target"]
                                         subList.append(answer_subj)
                                 else:
@@ -129,14 +130,14 @@ class QuestionAnswer:
                         else:
                             if str(pair[4]) != "":
                                 timeS = [str(time).lower() for time in self.nlp(loaded[str(i)]["time"])]
-                                if timeQ in timeS:
+                                if timeQ in timeS or timeS in timeQ:
                                     answer_subj = loaded[str(i)]["target"]
                                     subList.append(answer_subj)
                             else:
                                 answer_subj = loaded[str(i)]["target"]
                                 subList.append(answer_subj)
 
-            answer_obj = ",".join(subList)
+            answer_obj = ", ".join(subList)
             if answer_obj == "":
                 return "None"
             return answer_obj
@@ -150,7 +151,7 @@ class QuestionAnswer:
                 # print(loaded[str(i)], "HERE we go")
                 subjectS = loaded[str(i)]["source"]
                 # print(type(subjectQ), type(subjectS), numberOfPairs)
-                if subjectQ == subjectS:
+                if subjectQ in subjectS or subjectS in subjectQ:
                     relationS = [relation for relation in self.nlp(loaded[str(i)]["relation"])]
                     # print(relationS)
                     relationS = [i.lemma_ for i in relationS]
@@ -172,7 +173,7 @@ class QuestionAnswer:
                         if str(pair[5]) != "":
                             placeS = [str(place).lower() for place in self.nlp(loaded[str(i)]["place"])]
                             # print(placeQ, placeS)
-                            if placeQ in placeS:
+                            if placeQ in placeS or placeS in placeQ:
                                 if loaded[str(i)]["time"] != '':
                                     answer_obj = loaded[str(i)]["time"]
                                 # elif extraIN == "in" or extraIN == "on":
@@ -189,7 +190,7 @@ class QuestionAnswer:
             subjectQ = pair[0]
             for i in loaded:
                 subjectS = loaded[str(i)]["source"]
-                if subjectQ == subjectS:
+                if subjectQ in subjectS or subjectS in subjectQ:
                     relationS = [relation for relation in self.nlp(loaded[str(i)]["relation"])]
                     relationS = [i.lemma_ for i in relationS]
                     relationS = relationS[0]
@@ -197,7 +198,7 @@ class QuestionAnswer:
                     if relationQ == relationS:
                         if str(pair[4]) != "":
                             timeS = [str(time).lower() for time in self.nlp(loaded[str(i)]["time"])]
-                            if timeQ in timeS:
+                            if timeQ in timeS or timeS in timeQ:
                                 answer_obj = loaded[str(i)]["place"]
                                 if answer_obj in (" ",""):
                                     if int(i)<int(len(loaded)-1):
