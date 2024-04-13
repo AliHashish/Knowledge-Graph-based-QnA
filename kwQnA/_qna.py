@@ -53,7 +53,8 @@ class QuestionAnswer:
 
             for i in loaded:
                 relationS = [relation for relation in self.nlp(loaded[str(i)]["relation"])]
-                relationSSS = " ".join([relation.lemma_ for relation in self.nlp(loaded[str(i)]["relation"])])
+                # relationSSS = " ".join([relation.lemma_ for relation in self.nlp(loaded[str(i)]["relation"])])
+                relationSSS = " ".join([i.lemma_ for i in relationS])
 
                 relationS = [i.lemma_ for i in relationS]
                 relationS = relationS[0]

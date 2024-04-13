@@ -223,27 +223,27 @@ class ComplexFunc:
 
     def question_pairs(self, question__):
 
-        # if word.dep_ in ('ROOT'):
-        #         root_word = str(word).lower()
-        # root_condition = (root_word in ("am", "is", "are") and word.dep_ in ('attr'))
-
         questionNLPed = self.nlp(question__)
+        
+        root_condition = False
+        root_word = ""
         for word in questionNLPed:
             if word.dep_ in ('ROOT'):
                 root_word = str(word).lower()
-            root_condition = (root_word in ("am", "is", "are") and word.dep_ in ('attr'))
+            # root_condition = (root_word in ("am", "is", "are") and word.dep_ in ('attr'))
 
-        maybe_object = ([i for i in questionNLPed if i.dep_ in ('obj', 'pobj', 'dobj')])
+        maybe_object = ([i for i in questionNLPed if (i.dep_ in ('obj', 'pobj', 'dobj') or (root_word in ("am", "is", "are") and i.dep_ in ('attr')))])
         maybe_place, maybe_time = [], []
         aux_relation = ""
         maybe_time, maybe_place = self.get_time_place_from_sent(questionNLPed)
         object_list = []
 
+
         for obj in questionNLPed:
             objectNEW = obj
-
+            root_condition = (root_word in ("am", "is", "are") and obj.dep_ in ('attr'))
             # FOR WHO
-            if obj.dep_ in ('obj', 'dobj', 'pobj', 'xcomp') and str(obj).lower() != "what":
+            if (obj.dep_ in ('obj', 'dobj', 'pobj', 'xcomp') or root_condition) and str(obj).lower() != "what":
                 buffer_obj = obj
 
                 if obj.dep_ in ('xcomp') and obj.nbor(-1).dep_ in ('aux') and obj.nbor(-2).dep_ in ('ROOT'):
@@ -254,8 +254,9 @@ class ComplexFunc:
                 else:
                     if str(obj) not in maybe_time and str(obj) not in maybe_place:
                         for child in obj.subtree:
-                            if child.dep_ in ('conj', 'dobj', 'pobj', 'obj'):
-                                if [i for i in child.lefts]:
+                            child_root_condition = (root_word in ("am", "is", "are") and child.dep_ in ('attr'))
+                            if child.dep_ in ('conj', 'dobj', 'pobj', 'obj') or child_root_condition:
+                                if [i for i in child.lefts]:        # momkn nb2a ngarab child.children badal .lefts, 3mlnaha fy 7aga tanya w zabatet
                                     if child.nbor(-1).dep_ in ('punct') and child.nbor(-2).dep_ in ('compound'):
                                         child = str(child.nbor(-2)) + str(child.nbor(-1)) + str(child)
                                         object_list.append(str(child))
