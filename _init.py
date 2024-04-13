@@ -51,11 +51,11 @@ class Main:
 if __name__ == "__main__":
     initialize = Main()
     # inputfile, inputQue, showGraph, showEntities = initialize.main(sys.argv[1:])
-    # inputfile, inputQue, showGraph, showEntities = "data.txt", "Who was born on November 11, 1974?", "n", "n"
-    # inputfile, inputQue, showGraph, showEntities = "data.txt", "When was Leonardo Dicaprio born?", "n", "n"
+    inputfile, inputQue, showGraph, showEntities = "data.txt", "Who lives in giza?", "n", "n"
+    # inputfile, inputQue, showGraph, showEntities = "data.txt", "When was messi born?", "n", "n"
     # inputfile, inputQue, showGraph, showEntities = "data.txt", "When was World War II?", "n", "n"
-    inputfile, inputQue, showGraph, showEntities = "data.txt", "who is a doctor?", "n", "n"
-    
+    # inputfile, inputQue, showGraph, showEntities = "data.txt", "who is a doctor?", "n", "n"
+    inputQue = inputQue.lower()
     
     input_file = open(inputfile,"r+")
 

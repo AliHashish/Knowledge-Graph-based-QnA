@@ -195,15 +195,21 @@ class ComplexFunc:
 
         self.ent_pairs = []
 
+        flag_time = False
+        flag_place = False
         if time:
-            time = time[0]
-        else:
-            time = ""
-
+            flag_time = True
         if place:
-            place = place[0]
-        else:
-            place = ""
+            flag_place = True
+        # if time:
+        #     time = time[0]
+        # else:
+        #     time = ""
+
+        # if place:
+        #     place = place[0]
+        # else:
+        #     place = ""
 
         pa, pb=[], []
         for m in subject_list:
@@ -213,10 +219,26 @@ class ComplexFunc:
             pb.append([n])
 
         # print(pa, pb)
-
-        for m in range(0, len(pa)):
-            for n in range(0, len(pb)):
-                self.ent_pairs.append([str(pa[m][0]).lower(), str(relation).lower(),str(aux_relation).lower(), str(pb[n][0]).lower(), str(time), str(place)])
+        if flag_time and flag_place:
+            for m in range(0, len(pa)):
+                for n in range(0, len(pb)):
+                    for t in time:
+                        for p in place:
+                            self.ent_pairs.append([str(pa[m][0]).lower(), str(relation).lower(),str(aux_relation).lower(), str(pb[n][0]).lower(), str(t), str(p)])
+        elif flag_time:
+            for m in range(0, len(pa)):
+                for n in range(0, len(pb)):
+                    for t in time:
+                        self.ent_pairs.append([str(pa[m][0]).lower(), str(relation).lower(),str(aux_relation).lower(), str(pb[n][0]).lower(), str(t), str("")])
+        elif flag_place:
+            for m in range(0, len(pa)):
+                for n in range(0, len(pb)):
+                    for p in place:
+                        self.ent_pairs.append([str(pa[m][0]).lower(), str(relation).lower(),str(aux_relation).lower(), str(pb[n][0]).lower(), str(""), str(p)])
+        else:
+            for m in range(0, len(pa)):
+                for n in range(0, len(pb)):
+                    self.ent_pairs.append([str(pa[m][0]).lower(), str(relation).lower(),str(aux_relation).lower(), str(pb[n][0]).lower(), str(""), str("")])
 
         # print(self.ent_pairs)
         return self.ent_pairs
@@ -249,14 +271,14 @@ class ComplexFunc:
                 if obj.dep_ in ('xcomp') and obj.nbor(-1).dep_ in ('aux') and obj.nbor(-2).dep_ in ('ROOT'):
                     continue
 
-                if str(obj) in maybe_place and obj.nbor(-1).dep_ in ('prep') and str(obj.nbor(-1)) == "of":
+                if str(obj).lower() in str(maybe_place).lower() and obj.nbor(-1).dep_ in ('prep') and str(obj.nbor(-1)) == "of":
                     pass
                 else:
-                    if str(obj) not in maybe_time and str(obj) not in maybe_place:
+                    if str(obj).lower() not in str(maybe_time).lower() and str(obj).lower() not in str(maybe_place).lower():
                         for child in obj.subtree:
                             child_root_condition = (root_word in ("am", "is", "are") and child.dep_ in ('attr'))
                             if child.dep_ in ('conj', 'dobj', 'pobj', 'obj') or child_root_condition:
-                                if [i for i in child.lefts]:        # momkn nb2a ngarab child.children badal .lefts, 3mlnaha fy 7aga tanya w zabatet
+                                if [i for i in child.children]:        # momkn nb2a ngarab child.children badal .lefts, 3mlnaha fy 7aga tanya w zabatet
                                     if child.nbor(-1).dep_ in ('punct') and child.nbor(-2).dep_ in ('compound'):
                                         child = str(child.nbor(-2)) + str(child.nbor(-1)) + str(child)
                                         object_list.append(str(child))
@@ -294,13 +316,13 @@ class ComplexFunc:
                                         object_list.append(str(child))
 
                             elif obj.dep_ in ('xcomp'):
-                                object_list.append(str(obj))
+                                object_list.append(str(obj).lower())
 
-                    elif str(obj) in maybe_place and str(obj.nbor(-1)) != "of":
-                        object_list.append(str(obj))
+                    elif str(obj).lower() in str(maybe_place).lower() and str(obj.nbor(-1)) != "of":
+                        object_list.append(str(obj).lower())
                     else:
-                        if str(obj) in maybe_time and object_list == []:
-                            object_list.append(str(obj))
+                        if str(obj).lower() in str(maybe_time).lower() and object_list == []:
+                            object_list.append(str(obj).lower())
 
 
                 obj = object_list[-1]

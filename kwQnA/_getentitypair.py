@@ -17,7 +17,7 @@ class GetEntity:
         self.change = change_nouns()
 
     def preprocess_text(self, input_file, question_mloosh_lazma=""):
-        text_strip = [text.strip() for text in input_file]
+        text_strip = [text.lower().strip() for text in input_file]
         preprocessed_text = [text for text in text_strip if text not in ('', ' ')]
         text = " ".join(preprocessed_text)
         # """ ADDED CUSTOM SCRIPT """
