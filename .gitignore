@@ -131,3 +131,5 @@ dmypy.json
 
 database.json
 extra/
+docs/graph.svg
+docs/question_graph.svg

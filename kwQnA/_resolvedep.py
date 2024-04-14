@@ -18,44 +18,26 @@ class change_nouns:
         sentences = []
         prev_subjs = []
 
-        # temp_text = text
-        # print([i for i, j in enumerate(temp_text) if j in ("(",")")])
-        # pos_of_brackets = {pos:char for pos, char in enumerate(temp_text) if str(char) in ("(",")")}
-        # print(pos_of_brackets)
-        # if pos_of_brackets:
-        #     for key, val in pos_of_brackets:
-        #         if val in ["("]:
-        #             # string_with_brackets = str(temp_text[pos_of_brackets[0]:pos_of_brackets[-1]+2])
-        #             # last_pos = pos_of_brackets[0]-1
-        #             text = temp_text[:pos_of_brackets[0]] + temp_text[pos_of_brackets[-1]+2:]
-
 
         text = self.nlp(text)
         
-        # displacy.render(text, style="dep")      # 3lshan nersem el graph (lel testing bs)
+        # bnersem el data
         svg = displacy.render(text, style="dep", jupyter=False)
-        # file_name = '-'.join([w.text for w in text if not w.is_punct]) + ".svg"
         output_path = Path("./docs/graph.svg" )
         output_path.open("w", encoding="utf-8").write(svg)
+
+        # bnersem awl so2al mn el list of as2ela
         svg = displacy.render(self.nlp(question_mloosh_lazma), style="dep", jupyter=False)
-        # file_name = '-'.join([w.text for w in text if not w.is_punct]) + ".svg"
         output_path = Path("./docs/question_graph.svg" )
         output_path.open("w", encoding="utf-8").write(svg)
 
-        # checked_for_and , depend , pos_of_and_= self.check_for_multi_and_(sent)
-        # print(checked_for_and)
-
-        # sent1, sent2 = self.diff_sent_return(sent, depend, pos_of_and_)
 
         for sent in text.sents:
             prev_subj, compound_is, last_word = "", "", ""
 
             dep_word = [word.dep_ for word in sent]     # hyraga3 kol kelma no3ha eih (subject, adjective, kda y3ny)
-            # print(dep_word)
             word_dep_count_subj = [dep_word.index(word) for word in dep_word if word in ('nsubj', 'subj', 'nsubjpass')]
             # list of el indices beta3t el subject b kol anwa3o b2a
-
-            # print(word_dep_count_subj)
 
             # e7na shakeen fl 7eta dyh, hal yo2sod index wala length
             try:
@@ -71,7 +53,6 @@ class change_nouns:
                 if len(more_subjs) > 1:
                     if word.dep_ in more_subjs:
                         if word.dep_ in ['nsubjpass']:
-                            # print("HELLO", word.dep_)
                             break
                         elif word.dep_ in ('nsubj','subj'):
                             if word_dep_count_subj > 0:
@@ -112,16 +93,13 @@ class change_nouns:
                                     if str(word) in ('he','HE', 'He','she','SHE', 'She','it','IT', 'It'):
                                         # print(prev_subjs)
                                         new_word = prev_subjs[-1]
-                                        # print(new_word)
                                         # sentences.append(str(sent).replace(str(word), str(new_word)))
                                         sentences.append(re.sub(r'\b' + str(word) + r'\b', str(new_word), str(sent)))
                                         
                                         flag = False
 
                                     if pronoun and str(pronoun[0]) in ('his','His', 'her','Her', 'its', 'Its'):
-                                        # print(official_subject)
                                         new_word = str(official_subject)+"\'s"
-                                        # print(new_word)
                                         # sentences.append(str(sent).replace((str(pronoun[0])), str(new_word)))
                                         sentences.append(re.sub(r'\b' + str(pronoun[0]) + r'\b', str(new_word), str(sent)))
                                         flag = False
@@ -215,10 +193,6 @@ class change_nouns:
             count += 1
             if word.dep_ in ('cc'):
                 x.append(count-1)
-                # print([i for i in word.head.rights if i.dep_ in ('obj', 'dobj', 'pobj')])
-                # print([i for i in word.head.rights if i.dep_ in ('nsubj', 'nsubjpass', 'subj')])
-                # print([i for i in word.head.rights if i.dep_ in ('conj')])
-        # print(x)
 
         depen = []
         for i in x:
@@ -230,11 +204,8 @@ class change_nouns:
 
         for list1 in depen:
             check = all(item in list1 for item in list2)
-            #
-            # print(list1)
 
             if check:
-                # print(depen, x)
                 return True, depen, x
 
         return False, [], 0
@@ -255,7 +226,6 @@ class change_nouns:
                 p1 = lista[:pos_of_and[newcount]]
                 p2 = lista[pos_of_and[newcount]+1:]
 
-                # print(p1, p2)
 
                 senten1 = " ".join(p1)
                 senten2 = " ".join(p2)

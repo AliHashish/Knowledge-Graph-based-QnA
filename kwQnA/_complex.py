@@ -28,7 +28,7 @@ class ComplexFunc:
         for word in sentence:
             # """OBJECT FINDING loop"""
             if word.dep_ in ('ROOT'):
-                root_word = str(word).lower()
+                root_word = str(word)
             root_condition = (root_word in ("am", "is", "are") and word.dep_ in ('attr'))
             if word.dep_ in ('obj', 'dobj', 'pobj') or root_condition:
                 buffer_obj = word
@@ -49,38 +49,6 @@ class ComplexFunc:
                                         for subtree_element in child.subtree:
                                             child_with_comp = child_with_comp + " " + str(subtree_element) if child_with_comp != "" else str(subtree_element)
                                         object_list.append(str(child_with_comp))
-                                    # if child.nbor(-1).dep_ in ('nummod') and (child.dep_ in ('dobj', 'obj','pobj') or child_root_condition):
-                                    #     child = str(child.nbor(-1)) + " " + str(child)
-                                    #     object_list.append(str(child))
-
-                                    # elif child.nbor(-1).dep_ in ('punct'):
-                                    #     if child.nbor(-2).dep_ in ('compound'):
-                                    #         #ice-cream
-                                    #         child = str(child.nbor(-2)) + str(child.nbor(-1)) + str(child)
-                                    #         object_list.append(str(child))
-                                    #     elif child.nbor(-2).dep_ in ('amod'):
-                                    #         #social-distancing
-                                    #         child = str(child.nbor(-2)) + str(child.nbor(-1)) + str(child)
-                                    #         object_list.append(str(child))
-
-                                    # elif child.nbor(-1).dep_ in ('compound'):
-                                    #     # print(child)
-                                    #     child_with_comp = ""
-                                    #     for i in child.subtree:
-                                    #         if i.dep_ in ('compound', 'nummod','quantmod') or str(i) == str(child):
-                                    #             if child_with_comp == "":
-                                    #                 child_with_comp = str(i)
-                                    #             else:
-                                    #                 child_with_comp = child_with_comp +" "+ str(i)
-                                    #         elif i.dep_ in ('cc'):
-                                    #             break
-                                    #     # child = child_with_comp + " " + str(child)
-                                    #     # ice cream
-                                    #     object_list.append(str(child_with_comp))
-
-                                    # elif child.nbor(-1).dep_ in ('det'):
-                                    #     # The Taj Mahal
-                                    #     object_list.append(str(child))
 
                                 elif [i for i in child.rights]:
                                     if str(child.text) not in object_list:
@@ -226,21 +194,21 @@ class ComplexFunc:
                 for n in range(0, len(pb)):
                     for t in time:
                         for p in place:
-                            self.ent_pairs.append([str(pa[m][0]).lower(), str(relation).lower(),str(aux_relation).lower(), str(pb[n][0]).lower(), str(t), str(p)])
+                            self.ent_pairs.append([str(pa[m][0]), str(relation),str(aux_relation), str(pb[n][0]), str(t), str(p)])
         elif flag_time:
             for m in range(0, len(pa)):
                 for n in range(0, len(pb)):
                     for t in time:
-                        self.ent_pairs.append([str(pa[m][0]).lower(), str(relation).lower(),str(aux_relation).lower(), str(pb[n][0]).lower(), str(t), str("")])
+                        self.ent_pairs.append([str(pa[m][0]), str(relation),str(aux_relation), str(pb[n][0]), str(t), str("")])
         elif flag_place:
             for m in range(0, len(pa)):
                 for n in range(0, len(pb)):
                     for p in place:
-                        self.ent_pairs.append([str(pa[m][0]).lower(), str(relation).lower(),str(aux_relation).lower(), str(pb[n][0]).lower(), str(""), str(p)])
+                        self.ent_pairs.append([str(pa[m][0]), str(relation),str(aux_relation), str(pb[n][0]), str(""), str(p)])
         else:
             for m in range(0, len(pa)):
                 for n in range(0, len(pb)):
-                    self.ent_pairs.append([str(pa[m][0]).lower(), str(relation).lower(),str(aux_relation).lower(), str(pb[n][0]).lower(), str(""), str("")])
+                    self.ent_pairs.append([str(pa[m][0]), str(relation),str(aux_relation), str(pb[n][0]), str(""), str("")])
 
         # print(self.ent_pairs)
         return self.ent_pairs
@@ -253,7 +221,7 @@ class ComplexFunc:
         root_word = ""
         for word in questionNLPed:
             if word.dep_ in ('ROOT'):
-                root_word = str(word).lower()
+                root_word = str(word)
             # root_condition = (root_word in ("am", "is", "are") and word.dep_ in ('attr'))
 
         maybe_object = ([i for i in questionNLPed if (i.dep_ in ('obj', 'pobj', 'dobj') or (root_word in ("am", "is", "are") and i.dep_ in ('attr')))])
@@ -268,16 +236,16 @@ class ComplexFunc:
             objectNEW = obj
             root_condition = (root_word in ("am", "is", "are") and obj.dep_ in ('attr'))
             # FOR WHO
-            if (obj.dep_ in ('obj', 'dobj', 'pobj', 'xcomp') or root_condition) and str(obj).lower() != "what":
+            if (obj.dep_ in ('obj', 'dobj', 'pobj', 'xcomp') or root_condition) and str(obj) != "what":
                 buffer_obj = obj
 
                 if obj.dep_ in ('xcomp') and obj.nbor(-1).dep_ in ('aux') and obj.nbor(-2).dep_ in ('ROOT'):
                     continue
 
-                if str(obj).lower() in str(maybe_place).lower() and obj.nbor(-1).dep_ in ('prep') and str(obj.nbor(-1)) == "of":
+                if str(obj) in str(maybe_place) and obj.nbor(-1).dep_ in ('prep') and str(obj.nbor(-1)) == "of":
                     pass
                 else:
-                    if str(obj).lower() not in str(maybe_time).lower() and str(obj).lower() not in str(maybe_place).lower():
+                    if str(obj) not in str(maybe_time) and str(obj) not in str(maybe_place):
                         for child in obj.subtree:
                             child_root_condition = (root_word in ("am", "is", "are") and child.dep_ in ('attr'))
                             if child.dep_ in ('conj', 'dobj', 'pobj', 'obj') or child_root_condition:
@@ -319,13 +287,13 @@ class ComplexFunc:
                                         object_list.append(str(child))
 
                             elif obj.dep_ in ('xcomp'):
-                                object_list.append(str(obj).lower())
+                                object_list.append(str(obj))
 
-                    elif str(obj).lower() in str(maybe_place).lower() and str(obj.nbor(-1)) != "of":
-                        object_list.append(str(obj).lower())
+                    elif str(obj) in str(maybe_place) and str(obj.nbor(-1)) != "of":
+                        object_list.append(str(obj))
                     else:
-                        if str(obj).lower() in str(maybe_time).lower() and object_list == []:
-                            object_list.append(str(obj).lower())
+                        if str(obj) in str(maybe_time) and object_list == []:
+                            object_list.append(str(obj))
 
 
                 obj = object_list[-1]
@@ -351,16 +319,16 @@ class ComplexFunc:
                 self.ent_pairs = []
                 
                 if maybe_time and maybe_place:
-                    self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(obj).lower(), str(maybe_time[0]).lower(), str(maybe_place[0]).lower()])
+                    self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(obj), str(maybe_time[0]), str(maybe_place[0])])
                 elif maybe_time:
-                    self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(obj).lower(), str(maybe_time[0]).lower(), str("").lower()])
+                    self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(obj), str(maybe_time[0]), str("")])
                 elif maybe_place:
-                    self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(obj).lower(), str("").lower(), str(maybe_place[0]).lower()])
+                    self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(obj), str(""), str(maybe_place[0])])
                 else:
-                    self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(obj).lower(), str("").lower(), str("").lower()])
+                    self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(obj), str(""), str("")])
                 return self.ent_pairs
 
-            elif str(obj).lower() == "what":
+            elif str(obj) == "what":
                 relation = [w for w in objectNEW.ancestors if w.dep_ =='ROOT']
                 if relation:
                     relation = relation[0]
@@ -380,17 +348,17 @@ class ComplexFunc:
 
                 self.ent_pairs = []
                 if maybe_time and maybe_place:
-                    self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(obj).lower(), str(maybe_time[0]).lower(), str(maybe_place[0]).lower()])
+                    self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(obj), str(maybe_time[0]), str(maybe_place[0])])
                 elif maybe_time:
-                    self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(obj).lower(), str(maybe_time[0]).lower(), str("").lower()])
+                    self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(obj), str(maybe_time[0]), str("")])
                 elif maybe_place:
-                    self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(obj).lower(), str("").lower(), str(maybe_place[0]).lower()])
+                    self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(obj), str(""), str(maybe_place[0])])
                 else:
-                    self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(obj).lower(), str("").lower(), str("").lower()])
+                    self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(obj), str(""), str("")])
                 return self.ent_pairs
 
             elif obj.dep_ in ('advmod'):
-                if str(obj).lower() == 'where':
+                if str(obj) == 'where':
                     relation = [w for w in obj.ancestors if w.dep_ =='ROOT']
                     if relation:
                         relation = relation[0]
@@ -411,27 +379,27 @@ class ComplexFunc:
                     self.ent_pairs = []
                     if maybe_object:
                         if maybe_time and maybe_place:
-                            self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(maybe_object[-1]).lower(), str(maybe_time[0]).lower(), str("where").lower()])
+                            self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(maybe_object[-1]), str(maybe_time[0]), str("where")])
                         elif maybe_time:
-                            self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(maybe_object[-1]).lower(), str(maybe_time[0]).lower(), str("where").lower()])
+                            self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(maybe_object[-1]), str(maybe_time[0]), str("where")])
                         elif maybe_place:
-                            self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(maybe_object[-1]).lower(), str("").lower(), str("where").lower()])
+                            self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(maybe_object[-1]), str(""), str("where")])
                         else:
-                            self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(maybe_object[-1]).lower(), str("").lower(), str("where").lower()])
+                            self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(maybe_object[-1]), str(""), str("where")])
                     else:
                         if maybe_time and maybe_place:
-                            self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str("").lower(), str(maybe_time[0]).lower(), str("where").lower()])
+                            self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(""), str(maybe_time[0]), str("where")])
                         elif maybe_time:
-                            self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str("").lower(), str(maybe_time[0]).lower(), str("where").lower()])
+                            self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(""), str(maybe_time[0]), str("where")])
                         elif maybe_place:
-                            self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str("").lower(), str("").lower(), str("where").lower()])
+                            self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(""), str(""), str("where")])
                         else:
-                            self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str("").lower(), str("").lower(), str("where").lower()])
+                            self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(""), str(""), str("where")])
 
 
                     return self.ent_pairs
 
-                elif str(obj).lower() == 'when':
+                elif str(obj) == 'when':
                     relation = [w for w in obj.ancestors if w.dep_ =='ROOT']
                     if relation:
                         relation = relation[0]
@@ -456,22 +424,22 @@ class ComplexFunc:
                     self.ent_pairs = []
                     if maybe_object:
                         if maybe_time and maybe_place:
-                            self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(maybe_object[-1]).lower(), str("when").lower(), str(maybe_place[0]).lower()])
+                            self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(maybe_object[-1]), str("when"), str(maybe_place[0])])
                         elif maybe_time:
-                            self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(maybe_object[-1]).lower(), str("when").lower(), str("").lower()])
+                            self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(maybe_object[-1]), str("when"), str("")])
                         elif maybe_place:
-                            self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(maybe_object[-1]).lower(), str("when").lower(), str(maybe_place[0]).lower()])
+                            self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(maybe_object[-1]), str("when"), str(maybe_place[0])])
                         else:
-                            self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(maybe_object[-1]).lower(), str("when").lower(), str("").lower()])
+                            self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(maybe_object[-1]), str("when"), str("")])
                     else:
                         if maybe_time and maybe_place:
-                            self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str("").lower(), str("when").lower(), str(maybe_place[0]).lower()])
+                            self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(""), str("when"), str(maybe_place[0])])
                         elif maybe_time:
-                            self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str("").lower(), str("when").lower(), str("").lower()])
+                            self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(""), str("when"), str("")])
                         elif maybe_place:
-                            self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str("").lower(), str("when").lower(), str(maybe_place[0]).lower()])
+                            self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(""), str("when"), str(maybe_place[0])])
                         else:
-                            self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str("").lower(), str("when").lower(), str("").lower()])
+                            self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(""), str("when"), str("")])
 
 
                     return self.ent_pairs

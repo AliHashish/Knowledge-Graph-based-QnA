@@ -51,41 +51,37 @@ class Main:
 if __name__ == "__main__":
     initialize = Main()
     # inputfile, inputQue, showGraph, showEntities = initialize.main(sys.argv[1:])
-    # inputfile, inputQue, showGraph, showEntities = "data.txt", "Who lives in giza?", "n", "n"
-    # inputfile, inputQue, showGraph, showEntities = "data.txt", "When was messi born?", "n", "n"
-    # inputfile, inputQue, showGraph, showEntities = "data.txt", "When was World War II?", "n", "n"
-    # inputfile, inputQue, showGraph, showEntities = "data.txt", "who is a doctor?", "n", "n"
-    # inputfile, inputQue, showGraph, showEntities = "data.txt", "what did messi win in the United Kingdom?", "n", "n"
-    inputfile, inputQue, showGraph, showEntities = "data.txt", "what did messi win in 2032?", "n", "n"
-    inputQue = inputQue.lower()
-    inputQue = ["what did messi win in 2032?", "who is a doctor?", "When was messi born?", "Who lives in giza?"]
+    inputfile, inputQue, showGraph, showEntities = "data.txt", "ektb so2al hena?", "n", "n"
+    inputQue = ["what did messi win in 2032?", "what did messi win in the United Kingdom?", "who is a doctor?", "When was messi born?", "Who lives in giza?"]
     
     input_file = open(inputfile,"r+")
+    try:
+        if inputfile:
 
-    if inputfile:
+            refined_text = initialize.getEntity.preprocess_text(input_file, inputQue[0].lower())
 
-        refined_text = initialize.getEntity.preprocess_text(input_file, inputQue[0])
+            dataEntities, numberOfPairs = initialize.getEntity.get_entity(refined_text)
+            """ getentity return dataentity[0] """
+            if dataEntities:
+                initialize.export.dumpdata(dataEntities[0])
 
-        dataEntities, numberOfPairs = initialize.getEntity.get_entity(refined_text)
-        """ getentity return dataentity[0] """
-        if dataEntities:
-            initialize.export.dumpdata(dataEntities[0])
+                if showEntities in ('y', 'yes', 'true'):
+                    print(dataEntities[0])
 
-            if showEntities in ('y', 'yes', 'true'):
-                print(dataEntities[0])
+                if showGraph in ('y', 'yes', 'true'):
+                    initialize.graph.createGraph(dataEntities[0])
 
-            if showGraph in ('y', 'yes', 'true'):
-                initialize.graph.createGraph(dataEntities[0])
+                if inputQue:
+                    for question in inputQue:
+                        outputAnswer = initialize.qna.findanswer(question.lower(), numberOfPairs)
 
-            if inputQue:
-                for question in inputQue:
-                    outputAnswer = initialize.qna.findanswer(question.lower(), numberOfPairs)
-
-                    print("------------------------------------------------------------------------------------------------------------")
-                    print("Question: ",question)
-                    print("Answer:   ",outputAnswer)
-                    print("------------------------------------------------------------------------------------------------------------\n\n")
+                        print("------------------------------------------------------------------------------------------------------------")
+                        print("Question: ",question)
+                        print("Answer:   ",outputAnswer)
+                        print("------------------------------------------------------------------------------------------------------------\n\n")
+            else:
+                print("Not Applicable - mfeesh entities")
         else:
-            print("Not Applicable - mfeesh entities")
-    else:
-        print("No Input file detected")
+            print("No Input file detected")
+    except Exception as e:
+        print("el Error bta3na: ",e)
