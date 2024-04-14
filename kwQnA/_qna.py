@@ -81,10 +81,10 @@ class QuestionAnswer:
                     if objectS in objectQ or objectQ in objectS:    # el egaba fl object 3ady
                         answer_subj = loaded[str(i)]["source"]
                         subList.add(answer_subj)
-                    elif objectQ in str(timeS):                     # et2kd en el egaba msh fl time
+                    elif objectQ in  " ".join(timeS):                     # et2kd en el egaba msh fl time
                         answer_subj = loaded[str(i)]["source"]
                         subList.add(answer_subj)
-                    elif objectQ in str(placeS):                    # et2kd en el egaba msh fl place
+                    elif objectQ in  " ".join(placeS):                  # et2kd en el egaba msh fl place
                         answer_subj = loaded[str(i)]["source"]
                         subList.add(answer_subj)
 
@@ -95,7 +95,7 @@ class QuestionAnswer:
                     if objectS in objectQ or objectQ in objectS:
                         if str(pair[4]) != "":
                             timeS = [str(loaded[str(i)]["time"]).lower()]
-                            if timeQ in str(timeS):
+                            if timeQ in " ".join(timeS):
                                 answer_subj = loaded[str(i)]["source"]
                                 subList.add(answer_subj)
                         else:
@@ -117,19 +117,17 @@ class QuestionAnswer:
                 if subjectQ in subjectS or subjectS in subjectQ:
                     relationS = [relation for relation in self.nlp(loaded[str(i)]["relation"])]
                     relationS = [i.lemma_ for i in relationS]
-                    if len(relationS) > 1:
-                        relationS = " ".join(relationS)
-                    else:
-                        relationS = relationS[0]
+                    relationS = " ".join(relationS)
+
                     # print(relationQ, relationS)
                     if relationQ == relationS:
                         if str(pair[5]) != "":
                             placeS = [str(place).lower() for place in self.nlp(loaded[str(i)]["place"])]
                             # print(placeQ, placeS)
-                            if placeQ in placeS or placeS in placeQ:
+                            if placeQ in " ".join(placeS):
                                 if str(pair[4]) != "":
                                     timeS = [str(time).lower() for time in self.nlp(loaded[str(i)]["time"])]
-                                    if timeQ in str(timeS):
+                                    if timeQ in " ".join(timeS):
                                         answer_subj = loaded[str(i)]["target"]
                                         subList.add(answer_subj)
                                 else:
@@ -138,7 +136,7 @@ class QuestionAnswer:
                         else:
                             if str(pair[4]) != "":
                                 timeS = [str(time).lower() for time in self.nlp(loaded[str(i)]["time"])]
-                                if timeQ in str(timeS):
+                                if timeQ in " ".join(timeS):
                                     answer_subj = loaded[str(i)]["target"]
                                     subList.add(answer_subj)
                             else:
@@ -181,7 +179,7 @@ class QuestionAnswer:
                         if str(pair[5]) != "":
                             placeS = [str(place).lower() for place in self.nlp(loaded[str(i)]["place"])]
                             # print(placeQ, placeS)
-                            if placeQ in placeS or placeS in placeQ:
+                            if placeQ in " ".join(placeS):
                                 if loaded[str(i)]["time"] != '':
                                     answer_obj = loaded[str(i)]["time"]
                                 # elif extraIN == "in" or extraIN == "on":

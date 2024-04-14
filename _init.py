@@ -51,17 +51,20 @@ class Main:
 if __name__ == "__main__":
     initialize = Main()
     # inputfile, inputQue, showGraph, showEntities = initialize.main(sys.argv[1:])
-    inputfile, inputQue, showGraph, showEntities = "data.txt", "Who lives in giza?", "n", "n"
+    # inputfile, inputQue, showGraph, showEntities = "data.txt", "Who lives in giza?", "n", "n"
     # inputfile, inputQue, showGraph, showEntities = "data.txt", "When was messi born?", "n", "n"
     # inputfile, inputQue, showGraph, showEntities = "data.txt", "When was World War II?", "n", "n"
     # inputfile, inputQue, showGraph, showEntities = "data.txt", "who is a doctor?", "n", "n"
+    # inputfile, inputQue, showGraph, showEntities = "data.txt", "what did messi win in the United Kingdom?", "n", "n"
+    inputfile, inputQue, showGraph, showEntities = "data.txt", "what did messi win in 2032?", "n", "n"
     inputQue = inputQue.lower()
+    inputQue = ["what did messi win in 2032?", "who is a doctor?", "When was messi born?", "Who lives in giza?"]
     
     input_file = open(inputfile,"r+")
 
     if inputfile:
 
-        refined_text = initialize.getEntity.preprocess_text(input_file, inputQue)
+        refined_text = initialize.getEntity.preprocess_text(input_file, inputQue[0])
 
         dataEntities, numberOfPairs = initialize.getEntity.get_entity(refined_text)
         """ getentity return dataentity[0] """
@@ -75,12 +78,13 @@ if __name__ == "__main__":
                 initialize.graph.createGraph(dataEntities[0])
 
             if inputQue:
-                outputAnswer = initialize.qna.findanswer(inputQue, numberOfPairs)
+                for question in inputQue:
+                    outputAnswer = initialize.qna.findanswer(question.lower(), numberOfPairs)
 
-                print("------------------------------------------------------------------------------------------------------------")
-                print("Question: ",inputQue)
-                print("Answer:   ",outputAnswer)
-                print("------------------------------------------------------------------------------------------------------------")
+                    print("------------------------------------------------------------------------------------------------------------")
+                    print("Question: ",question)
+                    print("Answer:   ",outputAnswer)
+                    print("------------------------------------------------------------------------------------------------------------\n\n")
         else:
             print("Not Applicable - mfeesh entities")
     else:

@@ -32,49 +32,55 @@ class ComplexFunc:
             root_condition = (root_word in ("am", "is", "are") and word.dep_ in ('attr'))
             if word.dep_ in ('obj', 'dobj', 'pobj') or root_condition:
                 buffer_obj = word
-                if str(word) in place and word.nbor(-1).dep_ in ('prep') and str(word.nbor(-1)) == "of":
-                    pass
-                    # """ INDIA should be in place list + "of" "India" is there then it will come here """
-                else:
-                    if str(word) not in time and str(word) not in place:
+                # if str(word) in place and word.nbor(-1).dep_ in ('prep') and str(word.nbor(-1)) == "of":
+                #     pass
+                #     # """ INDIA should be in place list + "of" "India" is there then it will come here """
+                # else:
+                if not (str(word) in place and word.nbor(-1).dep_ in ('prep') and str(word.nbor(-1)) == "of"):
+                    if word.dep_ in ('dobj') or (str(word) not in " ".join(time) and str(word) not in " ".join(place)):
                         # """ INDIA should not be in place list + INDIA should not be in time list """
                         # """ice-cream and mangoes"""
                         for child in word.subtree:
                             child_root_condition = (root_word in ("am", "is", "are") and child.dep_ in ('attr'))
-                            if (child.dep_ in ('conj', 'dobj', 'pobj', 'obj') or child_root_condition) and (str(child) not in time) and (str(child) not in place):
+                            if (child.dep_ in ('conj', 'dobj', 'pobj', 'obj') or child_root_condition) and (child.dep_ in ('dobj') or (str(child) not in " ".join(time)) and str(child) not in " ".join(place)):
                                 if [i for i in child.lefts]:
-                                    if child.nbor(-1).dep_ in ('nummod') and (child.dep_ in ('dobj', 'obj','pobj') or child_root_condition):
-                                        child = str(child.nbor(-1)) + " " + str(child)
-                                        object_list.append(str(child))
-
-                                    elif child.nbor(-1).dep_ in ('punct'):
-                                        if child.nbor(-2).dep_ in ('compound'):
-                                            #ice-cream
-                                            child = str(child.nbor(-2)) + str(child.nbor(-1)) + str(child)
-                                            object_list.append(str(child))
-                                        elif child.nbor(-2).dep_ in ('amod'):
-                                            #social-distancing
-                                            child = str(child.nbor(-2)) + str(child.nbor(-1)) + str(child)
-                                            object_list.append(str(child))
-
-                                    elif child.nbor(-1).dep_ in ('compound'):
-                                        # print(child)
+                                    if child.dep_ in ('dobj', 'obj','pobj') or child_root_condition:
                                         child_with_comp = ""
-                                        for i in child.subtree:
-                                            if i.dep_ in ('compound', 'nummod','quantmod'):
-                                                if child_with_comp == "":
-                                                    child_with_comp = str(i)
-                                                else:
-                                                    child_with_comp = child_with_comp +" "+ str(i)
-                                            elif i.dep_ in ('cc'):
-                                                break
-                                        child = child_with_comp + " " + str(child)
-                                        # ice cream
-                                        object_list.append(str(child))
+                                        for subtree_element in child.subtree:
+                                            child_with_comp = child_with_comp + " " + str(subtree_element) if child_with_comp != "" else str(subtree_element)
+                                        object_list.append(str(child_with_comp))
+                                    # if child.nbor(-1).dep_ in ('nummod') and (child.dep_ in ('dobj', 'obj','pobj') or child_root_condition):
+                                    #     child = str(child.nbor(-1)) + " " + str(child)
+                                    #     object_list.append(str(child))
 
-                                    elif child.nbor(-1).dep_ in ('det'):
-                                        # The Taj Mahal
-                                        object_list.append(str(child))
+                                    # elif child.nbor(-1).dep_ in ('punct'):
+                                    #     if child.nbor(-2).dep_ in ('compound'):
+                                    #         #ice-cream
+                                    #         child = str(child.nbor(-2)) + str(child.nbor(-1)) + str(child)
+                                    #         object_list.append(str(child))
+                                    #     elif child.nbor(-2).dep_ in ('amod'):
+                                    #         #social-distancing
+                                    #         child = str(child.nbor(-2)) + str(child.nbor(-1)) + str(child)
+                                    #         object_list.append(str(child))
+
+                                    # elif child.nbor(-1).dep_ in ('compound'):
+                                    #     # print(child)
+                                    #     child_with_comp = ""
+                                    #     for i in child.subtree:
+                                    #         if i.dep_ in ('compound', 'nummod','quantmod') or str(i) == str(child):
+                                    #             if child_with_comp == "":
+                                    #                 child_with_comp = str(i)
+                                    #             else:
+                                    #                 child_with_comp = child_with_comp +" "+ str(i)
+                                    #         elif i.dep_ in ('cc'):
+                                    #             break
+                                    #     # child = child_with_comp + " " + str(child)
+                                    #     # ice cream
+                                    #     object_list.append(str(child_with_comp))
+
+                                    # elif child.nbor(-1).dep_ in ('det'):
+                                    #     # The Taj Mahal
+                                    #     object_list.append(str(child))
 
                                 elif [i for i in child.rights]:
                                     if str(child.text) not in object_list:
@@ -92,14 +98,10 @@ class ComplexFunc:
                                     if str(child) not in object_list:
                                         object_list.append(str(child))
 
-                    elif str(word) in place and str(word.nbor(-1)) != "of":
-                        if object_list == []:
-                            object_list.append(str(word))
-                        else:
-                            pass
-                    else:
-                        if str(word) in time and object_list == []:
-                            object_list.append(str(word))
+                    elif str(word) in " ".join(place) and str(word.nbor(-1)) != "of" and object_list == []:
+                        object_list.append(str(word))
+                    elif str(word) in " ".join(time) and object_list == []:
+                        object_list.append(str(word))
 
         return object_list, buffer_obj
 
@@ -260,6 +262,7 @@ class ComplexFunc:
         maybe_time, maybe_place = self.get_time_place_from_sent(questionNLPed)
         object_list = []
 
+        subject = ""
 
         for obj in questionNLPed:
             objectNEW = obj
@@ -346,7 +349,7 @@ class ComplexFunc:
                     relation = 'unknown'
 
                 self.ent_pairs = []
-
+                
                 if maybe_time and maybe_place:
                     self.ent_pairs.append([str(subject).lower(), str(relation).lower(),str(aux_relation).lower(), str(obj).lower(), str(maybe_time[0]).lower(), str(maybe_place[0]).lower()])
                 elif maybe_time:
