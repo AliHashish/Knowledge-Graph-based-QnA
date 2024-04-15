@@ -16,12 +16,15 @@ class GetEntity:
         self.nlp = spacy.load('en_core_web_sm')
         self.change = change_nouns()
 
-    def preprocess_text(self, input_file, question_mloosh_lazma=""):
-        text_strip = [text.lower().strip() for text in input_file]
+    def preprocess_text(self, input_file, questions_mlhash_lazma=[]):
+        text_strip = [text.strip().lower() for text in input_file]
         preprocessed_text = [text for text in text_strip if text not in ('', ' ')]
         text = " ".join(preprocessed_text)
+
+
+
         # """ ADDED CUSTOM SCRIPT """
-        text = self.change.resolved(text, question_mloosh_lazma)       # dyh el bt3ml tinternational
+        text = self.change.resolved(text, questions_mlhash_lazma)
         # """ ___________________ """
         text = self.nlp(text)
         return text
@@ -45,7 +48,7 @@ class GetEntity:
                 for pair in normal_sent_:
                     ent_pairs.append(pair)
 
-                pairs = pd.DataFrame(ent_pairs, columns=['source', 'relation', 'aux_relation', 'target', 'time', 'place'])
+                pairs = pd.DataFrame(ent_pairs, columns=['source', 'relation', 'aux_relation', 'target', 'time', 'place', 'quantity'])
                 number_of_ent_pairs = str(len(ent_pairs))
 
                 final_entity_pairs.append(pairs)

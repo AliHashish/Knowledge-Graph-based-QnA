@@ -10,7 +10,7 @@ class change_nouns:
         super(change_nouns, self).__init__()
         self.nlp = spacy.load('en_core_web_sm')
 
-    def resolved(self, text, question_mloosh_lazma=""):
+    def resolved(self, text, questions_mlhash_lazma=[]):
         flag = True
 
         official_subject = "Unknown"
@@ -27,6 +27,10 @@ class change_nouns:
         output_path.open("w", encoding="utf-8").write(svg)
 
         # bnersem awl so2al mn el list of as2ela
+        question_mloosh_lazma = ""
+        for question in questions_mlhash_lazma:
+            question_mloosh_lazma = question_mloosh_lazma + question.lower() + " "
+
         svg = displacy.render(self.nlp(question_mloosh_lazma), style="dep", jupyter=False)
         output_path = Path("./docs/question_graph.svg" )
         output_path.open("w", encoding="utf-8").write(svg)

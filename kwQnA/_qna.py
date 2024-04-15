@@ -110,9 +110,6 @@ class QuestionAnswer:
                 subjectS = loaded[str(i)]["source"]
                 
                 if subjectQ in subjectS or subjectS in subjectQ:
-                    # 8ayartaha, 5aletha awl satr b3d el 2 comments dol
-                    # relationS = [relation for relation in self.nlp(loaded[str(i)]["relation"])]
-                    # relationS = [i.lemma_ for i in relationS]
                     relationS = [relation.lemma_ for relation in self.nlp(loaded[str(i)]["relation"])]
                     relationS = " ".join(relationS)
 
@@ -148,45 +145,25 @@ class QuestionAnswer:
             for i in loaded:
                 subjectS = loaded[str(i)]["source"]
                 if subjectQ in subjectS or subjectS in subjectQ:
-                    # 8ayartaha brdo
-                    # relationS = [relation for relation in self.nlp(loaded[str(i)]["relation"])]
-                    # relationS = [i.lemma_ for i in relationS]
                     relationS = [relation.lemma_ for relation in self.nlp(loaded[str(i)]["relation"])]
 
 
-                    # 8ayartaha, 3ayzeen nefham eih el 3ak dh xDDDD ana 5aletha el satr el ta7t dh bs
-                    # 8albn lw el relation kelmetein, bytanesh el tanya unless enaha "to"
-                    # relBuffer = relationS
-                    # if len(relBuffer) < 2:
-                    #     relationS = relBuffer[0]
-                    # else:
-                    #     if str(relBuffer[1]) == 'to':
-                    #         relationS = " ".join(relationS)
-                    #     else:
-                    #         relationS = relationS[0]
-                    #         extraIN = relBuffer[1]
+
                     relationS = " ".join(relationS)
 
-                    # 8ayartaha, ay return 5aletha subList.add() w bn3ml return fl 2a5er bs
                     if relationQ == relationS:
                         if str(pair[5]) != "":
                             placeS = [str(place) for place in self.nlp(loaded[str(i)]["place"])]
-                            # print(placeQ, placeS)
                             if placeQ in " ".join(placeS):
                                 if loaded[str(i)]["time"] != '':
                                     answer_obj = loaded[str(i)]["time"]
-                                # elif extraIN == "in" or extraIN == "on":
-                                    # answer_obj = loaded[str(i)]["target"]
-                                    # return answer_obj
                                     subList.add(answer_obj)
                                 # return None     # lw el makan mwgood fl placeS, bs el time fady, return None, l2ny kda ma3rafsh el wa2t asln
                                 # bs msh hn3ml return b2a, e7na bs msh hn-append 7aga fl egaba
                         else:
                             if loaded[str(i)]["time"] != '':
                                 answer_obj = loaded[str(i)]["time"]
-                                # return answer_obj
                                 subList.add(answer_obj)
-                            # return None
             answer_obj = ", ".join(subList)
             if answer_obj == "":
                 return "None"
@@ -197,8 +174,7 @@ class QuestionAnswer:
             for i in loaded:
                 subjectS = loaded[str(i)]["source"]
                 if subjectQ in subjectS or subjectS in subjectQ:
-                    relationS = [relation for relation in self.nlp(loaded[str(i)]["relation"])]
-                    relationS = [i.lemma_ for i in relationS]
+                    relationS = [relation.lemma_ for relation in self.nlp(loaded[str(i)]["relation"])]
                     relationS = relationS[0]
 
                     if relationQ == relationS:
@@ -220,3 +196,20 @@ class QuestionAnswer:
                                 pass
                             return None
                         return answer_obj
+        elif pair[6] in ['many']:
+            subjectQ = pair[0]
+            for i in loaded:
+                subjectS = loaded[str(i)]["source"]
+                if subjectQ in subjectS or subjectS in subjectQ:
+                    relationS = [relation.lemma_ for relation in self.nlp(loaded[str(i)]["relation"])]
+                    relationS = relationS[0]
+
+                    if relationQ == relationS:
+                        if loaded[str(i)]["target"] in objectQ or objectQ in loaded[str(i)]["target"]:
+                            answer_obj = loaded[str(i)]["quantity"]
+                            subList.add(answer_obj)
+            answer_obj = ", ".join(subList)
+            if answer_obj == "":
+                return "None"
+            return answer_obj
+            
