@@ -133,3 +133,9 @@ database.json
 extra/
 docs/graph.svg
 docs/question_graph.svg
+docs/graph.svg
+*.svg
+dataset/train.csv
+dataset/validation.csv
+docs/question_graph.svg
+docs/graph.svg

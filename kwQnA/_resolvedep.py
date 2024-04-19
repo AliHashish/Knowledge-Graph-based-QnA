@@ -10,30 +10,31 @@ class change_nouns:
         super(change_nouns, self).__init__()
         self.nlp = spacy.load('en_core_web_sm')
 
-    def resolved(self, text, questions_mlhash_lazma=[]):
+    def resolved(self, text, questions_mlhash_lazma=[], title=""):
         flag = True
 
-        official_subject = "Unknown"
+        official_subject = title if title else "Unknown"
 
         sentences = []
-        prev_subjs = []
+        prev_subjs = [title]
+
 
 
         text = self.nlp(text)
         
         # bnersem el data
-        svg = displacy.render(text, style="dep", jupyter=False)
-        output_path = Path("./docs/graph.svg" )
-        output_path.open("w", encoding="utf-8").write(svg)
+        # svg = displacy.render(text, style="dep", jupyter=False)
+        # output_path = Path("./docs/graph.svg" )
+        # output_path.open("w", encoding="utf-8").write(svg)
 
-        # bnersem awl so2al mn el list of as2ela
-        question_mloosh_lazma = ""
-        for question in questions_mlhash_lazma:
-            question_mloosh_lazma = question_mloosh_lazma + question.lower() + " "
+        # # bnersem awl so2al mn el list of as2ela
+        # question_mloosh_lazma = ""
+        # for question in questions_mlhash_lazma:
+        #     question_mloosh_lazma = question_mloosh_lazma + question.lower() + " "
 
-        svg = displacy.render(self.nlp(question_mloosh_lazma), style="dep", jupyter=False)
-        output_path = Path("./docs/question_graph.svg" )
-        output_path.open("w", encoding="utf-8").write(svg)
+        # svg = displacy.render(self.nlp(question_mloosh_lazma), style="dep", jupyter=False)
+        # output_path = Path("./docs/question_graph.svg" )
+        # output_path.open("w", encoding="utf-8").write(svg)
 
 
         for sent in text.sents:
@@ -73,9 +74,9 @@ class change_nouns:
                                     pronoun = [i for i in word.subtree]
 
                                     if compound_is == "":
-                                        if str(word) not in ('he','HE', 'He','she','SHE', 'She','it','IT', 'It'):
+                                        if str(word) not in ('he', 'she', 'it'):
                                             prev_subj = str(word)
-                                            if str(pronoun[0]) not in ('his','His', 'her','Her', 'its', 'Its'):
+                                            if str(pronoun[0]) not in ('his','her', 'its'):
                                                 prev_subjs = [prev_subj]
                                                 official_subject = prev_subjs[0]
                                                 word_dep_count_subj = word_dep_count_subj - 1
@@ -94,7 +95,7 @@ class change_nouns:
 
                                     # if str(word) in ('they'):
                                         # subject_list.extend([str(a.text) for a in word.subtree if a.dep_ in ('conj')])
-                                    if str(word) in ('he','HE', 'He','she','SHE', 'She','it','IT', 'It'):
+                                    if str(word) in ('he', 'she', 'it'):
                                         # print(prev_subjs)
                                         new_word = prev_subjs[-1]
                                         # sentences.append(str(sent).replace(str(word), str(new_word)))
@@ -102,14 +103,14 @@ class change_nouns:
                                         
                                         flag = False
 
-                                    if pronoun and str(pronoun[0]) in ('his','His', 'her','Her', 'its', 'Its'):
+                                    if pronoun and str(pronoun[0]) in ('his','her', 'its'):
                                         new_word = str(official_subject)+"\'s"
                                         # sentences.append(str(sent).replace((str(pronoun[0])), str(new_word)))
                                         sentences.append(re.sub(r'\b' + str(pronoun[0]) + r'\b', str(new_word), str(sent)))
                                         flag = False
 
 
-                                elif word.dep_ in ('nsubj','subj','nsubjpass') and str(word) not in ('he','HE', 'He','she','SHE', 'She','it','IT', 'It'):
+                                elif word.dep_ in ('nsubj','subj','nsubjpass') and str(word) not in ('he', 'she', 'it'):
                                     last_word = word
                                 else:
                                     pass
@@ -130,9 +131,9 @@ class change_nouns:
                             pronoun = [i for i in word.subtree]
 
                             if compound_is == "":
-                                if str(word) not in ('he','HE', 'He','she','SHE', 'She','it','IT', 'It'):
+                                if str(word) not in ('he', 'she', 'it'):
                                     prev_subj = str(word)
-                                    if str(pronoun[0]) not in ('his','His', 'her','Her', 'its', 'Its'):
+                                    if str(pronoun[0]) not in ('his','her', 'its'):
                                         prev_subjs = [prev_subj]
                                         official_subject = prev_subjs[0]        # dh el subject bta3 el gomal el b3deeha y3ny
                                         word_dep_count_subj = word_dep_count_subj - 1
@@ -154,7 +155,7 @@ class change_nouns:
 
                             # if str(word) in ('they'):
                                 # subject_list.extend([str(a.text) for a in word.subtree if a.dep_ in ('conj')])
-                            if str(word) in ('he','HE', 'He','she','SHE', 'She','it','IT', 'It'):
+                            if str(word) in ('he', 'she', 'it'):
                                 # hasheel kelmet he/she, w ha7ot el subject Leonardo Dicaprio mthln
                                 # print(prev_subjs)
                                 new_word = prev_subjs[-1]
@@ -163,7 +164,7 @@ class change_nouns:
                                 sentences.append(re.sub(r'\b' + str(word) + r'\b', str(new_word), str(sent)))
                                 flag = False    # 5ly el flag false 3lshan my3mlsh append tany ta7t
 
-                            if pronoun and str(pronoun[0]) in ('his','His', 'her','Her', 'its', 'Its'):           # hysheel his w y7ot Leonardo DiCaprio's
+                            if pronoun and str(pronoun[0]) in ('his','her', 'its'):           # hysheel his w y7ot Leonardo DiCaprio's
                                 # most likely ne2dar ndom el etnein ifs el gayeen fy 7aga wa7da. el mo3aq 3amel bracket zyada bs (mloosh lazma 8albn) (DONE)
                                 # print(official_subject)
                                 new_word = str(official_subject)+"\'s"
@@ -174,7 +175,7 @@ class change_nouns:
                                 
 
 
-                        elif word.dep_ in ('nsubj','subj','nsubjpass') and str(word) not in ('he','HE', 'He','she','SHE', 'She','it','IT', 'It'):
+                        elif word.dep_ in ('nsubj','subj','nsubjpass') and str(word) not in ('he', 'she', 'it'):
                             last_word = word
                         else:
                             pass

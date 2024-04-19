@@ -52,7 +52,7 @@ if __name__ == "__main__":
     initialize = Main()
     # inputfile, inputQue, showGraph, showEntities = initialize.main(sys.argv[1:])
     inputfile, inputQue, showGraph, showEntities = "data.txt", "ektb so2al hena?", "n", "n"
-    inputQue = ["How many games did Ziad win?", "How many players does the game have?", "How many times did ziad win the game?", "How many sisters does Hamada have?", "How many players does the team consist of?",
+    inputQue = ["Where does hashish live?", "How many games did Ziad win?", "How many players does the game have?", "How many times did ziad win the game?", "How many sisters does Hamada have?", "How many players does the team consist of?",
                 "How many CDs does John have in his collection?", "What did Ziad win?",
                 "what did messi win in 2032?", "what did messi win in the United Kingdom?", "who is a doctor?", "When was messi born?", "Who lives in giza?"]
     

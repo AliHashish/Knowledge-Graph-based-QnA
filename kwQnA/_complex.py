@@ -273,7 +273,7 @@ class ComplexFunc:
         object_list = []
 
         subject = ""
-
+        buffer_obj = ""
             
         for index, obj in enumerate(questionNLPed):
             objectNEW = obj
@@ -315,8 +315,14 @@ class ComplexFunc:
                         if str(obj) in str(maybe_time) and object_list == []:
                             object_list.append(str(obj))
 
-                print(str(questionNLPed))
-                obj = object_list[-1]
+                # print(str(questionNLPed))
+                try:
+                    obj = object_list[-1]
+                except:
+                    if str(buffer_obj) != "":
+                        obj = buffer_obj
+                    else:
+                        obj = ""
                 relation = [w for w in objectNEW.ancestors if w.dep_ =='ROOT']
                 if relation:
                     relation = relation[0]
@@ -339,13 +345,13 @@ class ComplexFunc:
                 self.ent_pairs = []
                 
                 if maybe_time and maybe_place:
-                    self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(obj), str(maybe_time[0]), str(maybe_place[0]), str("")])
+                    self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(obj), str(maybe_time[0]), str(maybe_place[0]), str("who")])
                 elif maybe_time:
-                    self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(obj), str(maybe_time[0]), str(""), str("")])
+                    self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(obj), str(maybe_time[0]), str(""), str("who")])
                 elif maybe_place:
-                    self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(obj), str(""), str(maybe_place[0]), str("")])
+                    self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(obj), str(""), str(maybe_place[0]), str("who")])
                 else:
-                    self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(obj), str(""), str(""), str("")])
+                    self.ent_pairs.append([str(subject), str(relation),str(aux_relation), str(obj), str(""), str(""), str("who")])
                 return self.ent_pairs
 
             elif str(obj) == "what":
@@ -477,8 +483,8 @@ class ComplexFunc:
 
                         subject = self.find_subj(questionNLPed)
                         subject = subject[-1]
-                        subject = subject.split()
-                        subject = subject[-1]
+                        # subject = subject.split()
+                        # subject = subject[-1]
                     else:
                         relation = 'unknown'
                     

@@ -20,7 +20,7 @@ class QuestionAnswer:
 
     def findanswer(self, question, c):
         p = self.complex.question_pairs(question)
-        print(p)
+        # print(p)
 
         if p == [] or p is None:
             return "Not Applicable"
@@ -39,6 +39,7 @@ class QuestionAnswer:
             relationQ = i.lemma_
             relQ.append(relationQ)
 
+        subjectQ = pair[0]
         objectQ = pair[3]
         subList = set()
         timeQ = str(pair[4])
@@ -46,8 +47,7 @@ class QuestionAnswer:
 
         relationQ = " ".join(relQ)
 
-        if pair[0] in ('who'):
-
+        if pair[6] in ('who'):
             for i in loaded:
                 relationS = [relation for relation in self.nlp(loaded[str(i)]["relation"])]
                 # relationSSS = " ".join([relation.lemma_ for relation in self.nlp(loaded[str(i)]["relation"])])
@@ -60,11 +60,18 @@ class QuestionAnswer:
                     objectS = loaded[str(i)]["target"]
                     objectS = re.sub('-', ' ', objectS)
                     objectQ = re.sub('-', ' ', objectQ)
+                    # remove extra spaces using regex
+                    objectS = re.sub(' +', ' ', objectS)
+                    objectQ = re.sub(' +', ' ', objectQ)
 
-                    if self.p.singular_noun(objectS):
-                        objectS = self.p.singular_noun(objectS)
-                    if self.p.singular_noun(objectQ):
-                        objectQ = self.p.singular_noun(objectQ)
+                    try: 
+                        # by7awel bs mn plural le single
+                        if self.p.singular_noun(objectS):
+                            objectS = self.p.singular_noun(objectS)
+                        if self.p.singular_noun(objectQ):
+                            objectQ = self.p.singular_noun(objectQ)
+                    except:
+                        pass
 
                     timeS = ""
                     placeS = ""
@@ -72,16 +79,21 @@ class QuestionAnswer:
                         timeS = [str(loaded[str(i)]["time"])]
                     if str(pair[5]) != "":
                         placeS = [str(loaded[str(i)]["place"])]
-
-                    if objectS in objectQ or objectQ in objectS:    # el egaba fl object 3ady
-                        answer_subj = loaded[str(i)]["source"]
-                        subList.add(answer_subj)
-                    elif objectQ in  " ".join(timeS):                     # et2kd en el egaba msh fl time
-                        answer_subj = loaded[str(i)]["source"]
-                        subList.add(answer_subj)
-                    elif objectQ in  " ".join(placeS):                  # et2kd en el egaba msh fl place
-                        answer_subj = loaded[str(i)]["source"]
-                        subList.add(answer_subj)
+                    if pair[0] in ('who'):
+                        if objectS in objectQ or objectQ in objectS:    # el egaba fl object 3ady
+                            answer_subj = loaded[str(i)]["source"]
+                            subList.add(answer_subj)
+                        elif objectQ in  " ".join(timeS):                     # et2kd en el egaba msh fl time
+                            answer_subj = loaded[str(i)]["source"]
+                            subList.add(answer_subj)
+                        elif objectQ in  " ".join(placeS):                  # et2kd en el egaba msh fl place
+                            answer_subj = loaded[str(i)]["source"]
+                            subList.add(answer_subj)
+                    else:               # check for the subject
+                        subjectS = loaded[str(i)]["source"]
+                        if subjectS in subjectQ or subjectQ in subjectS:
+                            answer_subj = loaded[str(i)]["target"]
+                            subList.add(answer_subj)
 
                 elif str(relationSSS) == str(relationQ):
                     objectS = loaded[str(i)]["target"]
@@ -183,19 +195,17 @@ class QuestionAnswer:
                             if timeQ in " ".join(timeS):
                                 answer_obj = loaded[str(i)]["place"]
                                 # 8ayartaha, bsra7a m8yrtesh 7aga, ana mn awl hena m3rfsh howa by3ml eih xDDD
-                                if answer_obj in (" ",""):
-                                    if int(i)<int(len(loaded)-1):       # 7rfyn mlhash ay lazma
-                                        pass
-                                    return None
-                                return answer_obj
-                            return None
+                                if answer_obj not in (" ",""):
+                                    subList.add(answer_obj)
+                            
                         
                         answer_obj = loaded[str(i)]["place"]
-                        if answer_obj in (" ",""):
-                            if int(i)<int(len(loaded)-1):
-                                pass
-                            return None
-                        return answer_obj
+                        if answer_obj not in (" ",""):
+                            subList.add(answer_obj)
+            answer_obj = ", ".join(subList)
+            if answer_obj == "":
+                return "None"
+            return answer_obj
         elif pair[6] in ['many']:
             subjectQ = pair[0]
             for i in loaded:
@@ -204,7 +214,7 @@ class QuestionAnswer:
                     relationS = [relation.lemma_ for relation in self.nlp(loaded[str(i)]["relation"])]
                     relationS = relationS[0]
 
-                    if relationQ == relationS:
+                    if True or relationQ == relationS:
                         if loaded[str(i)]["target"] in objectQ or objectQ in loaded[str(i)]["target"]:
                             answer_obj = loaded[str(i)]["quantity"]
                             subList.add(answer_obj)
@@ -212,4 +222,4 @@ class QuestionAnswer:
             if answer_obj == "":
                 return "None"
             return answer_obj
-            
+        return "None"

@@ -16,6 +16,12 @@ class GetEntity:
         self.nlp = spacy.load('en_core_web_sm')
         self.change = change_nouns()
 
+    def preprocess_context(self, context, title=''):
+        text = context.strip()
+        text = self.change.resolved(text, title = title)
+        text = self.nlp(text)
+        return text
+    
     def preprocess_text(self, input_file, questions_mlhash_lazma=[]):
         text_strip = [text.strip().lower() for text in input_file]
         preprocessed_text = [text for text in text_strip if text not in ('', ' ')]
