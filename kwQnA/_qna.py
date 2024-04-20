@@ -19,7 +19,10 @@ class QuestionAnswer:
         self.p = inflect.engine()
 
     def findanswer(self, question, c):
-        p = self.complex.question_pairs(question)
+        try:
+            p = self.complex.question_pairs(question)
+        except:
+            return "Not Applicable"
         # print(p)
 
         if p == [] or p is None:
@@ -47,7 +50,7 @@ class QuestionAnswer:
 
         relationQ = " ".join(relQ)
 
-        if pair[6] in ('who'):
+        if pair[6] == 'who':
             for i in loaded:
                 relationS = [relation for relation in self.nlp(loaded[str(i)]["relation"])]
                 # relationSSS = " ".join([relation.lemma_ for relation in self.nlp(loaded[str(i)]["relation"])])
@@ -115,7 +118,7 @@ class QuestionAnswer:
                 return "None"
             return answer_subj
 
-        elif pair[3] in ['what']:
+        elif pair[3] == 'what':
             subjectQ = pair[0]
             # subList = set()       # mt3rfa bara, msh lazem n3mlha hena tany
             for i in loaded:
@@ -152,7 +155,7 @@ class QuestionAnswer:
                 return "None"
             return answer_obj
 
-        elif pair[4] in ['when']:
+        elif pair[4] == 'when':
             subjectQ = pair[0]
             for i in loaded:
                 subjectS = loaded[str(i)]["source"]
@@ -181,7 +184,7 @@ class QuestionAnswer:
                 return "None"
             return answer_obj
 
-        elif pair[5] in ['where']:
+        elif pair[5] == 'where':
             subjectQ = pair[0]
             for i in loaded:
                 subjectS = loaded[str(i)]["source"]
@@ -194,7 +197,6 @@ class QuestionAnswer:
                             timeS = [str(time) for time in self.nlp(loaded[str(i)]["time"])]
                             if timeQ in " ".join(timeS):
                                 answer_obj = loaded[str(i)]["place"]
-                                # 8ayartaha, bsra7a m8yrtesh 7aga, ana mn awl hena m3rfsh howa by3ml eih xDDD
                                 if answer_obj not in (" ",""):
                                     subList.add(answer_obj)
                             
@@ -206,7 +208,7 @@ class QuestionAnswer:
             if answer_obj == "":
                 return "None"
             return answer_obj
-        elif pair[6] in ['many']:
+        elif pair[6] == 'many':
             subjectQ = pair[0]
             for i in loaded:
                 subjectS = loaded[str(i)]["source"]

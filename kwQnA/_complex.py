@@ -172,10 +172,19 @@ class ComplexFunc:
         aux_relation, child_with_comp = "", ""
 
         subject_list = self.find_subj(sentence)
-        object_list, buffer_obj = self.find_obj(sentence, place, time)
+        try:
+            object_list, buffer_obj = self.find_obj(sentence, place, time)
+        except:
+            object_list = []
+            buffer_obj = ""
         if not buffer_obj:
             return None
-        relation, aux_relation = self.find_relation(buffer_obj)
+        
+        try:
+            relation, aux_relation = self.find_relation(buffer_obj)
+        except:
+            relation = ""
+            aux_relation = ""
 
         self.ent_pairs = []
 
