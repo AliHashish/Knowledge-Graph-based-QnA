@@ -18,18 +18,7 @@ class QuestionAnswer:
         self.nlp = spacy.load('en_core_web_sm')
         self.p = inflect.engine()
 
-    def findanswer(self, question, c):
-        try:
-            p = self.complex.question_pairs(question)
-        except:
-            return "Not Applicable"
-        # print(p)
-
-        if p == [] or p is None:
-            return "Not Applicable"
-
-        pair = p[0]
-
+    def solve(self, pair, looseConstraints=False):
         f = open("extra/database.json","r", encoding="utf8")
         listData = f.readlines()
 
@@ -62,7 +51,7 @@ class QuestionAnswer:
                     except:
                         continue
 
-                    if True or relationS == relationQ:
+                    if looseConstraints or relationS == relationQ:
                         objectS = loaded[str(i)]["target"]
                         objectS = re.sub('-', ' ', objectS)
                         objectQ = re.sub('-', ' ', objectQ)
@@ -131,7 +120,7 @@ class QuestionAnswer:
                         relationS = [relation.lemma_ for relation in self.nlp(loaded[str(i)]["relation"])]
                         relationS = " ".join(relationS)
 
-                        if True or relationQ == relationS:
+                        if looseConstraints or relationQ == relationS:
                             if str(pair[5]) != "":
                                 placeS = [str(place) for place in self.nlp(loaded[str(i)]["place"])]
                                 if placeQ in " ".join(placeS):
@@ -169,7 +158,7 @@ class QuestionAnswer:
 
                         relationS = " ".join(relationS)
 
-                        if True or  relationQ == relationS:
+                        if looseConstraints or  relationQ == relationS:
                             if str(pair[5]) != "":
                                 placeS = [str(place) for place in self.nlp(loaded[str(i)]["place"])]
                                 if placeQ in " ".join(placeS):
@@ -198,7 +187,7 @@ class QuestionAnswer:
                         except:
                             continue
 
-                        if True or relationQ == relationS:
+                        if looseConstraints or relationQ == relationS:
                             if str(pair[4]) != "":
                                 timeS = [str(time) for time in self.nlp(loaded[str(i)]["time"])]
                                 if timeQ in " ".join(timeS):
@@ -225,7 +214,7 @@ class QuestionAnswer:
                         except:
                             continue
 
-                        if True or relationQ == relationS:
+                        if looseConstraints or relationQ == relationS:
                             if loaded[str(i)]["target"] in objectQ or objectQ in loaded[str(i)]["target"]:
                                 answer_obj = loaded[str(i)]["quantity"]
                                 subList.add(answer_obj)
@@ -236,3 +225,24 @@ class QuestionAnswer:
         except:
             pass
         return "None"
+
+
+    def findanswer(self, question, looseConstraints=False):
+        try:
+            p = self.complex.question_pairs(question)
+        except:
+            return "Not Applicable"
+        # print(p)
+
+        if p == [] or p is None:
+            return "Not Applicable"
+
+        pair = p[0]
+        
+        answer = self.solve(pair, looseConstraints)
+        if answer == "None" and not looseConstraints:
+            return self.solve(pair, True)
+        return answer
+
+
+        

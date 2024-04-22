@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
             if inputQue:
                 for question in inputQue:
-                    outputAnswer = initialize.qna.findanswer(question.lower(), numberOfPairs)
+                    outputAnswer = initialize.qna.findanswer(question.lower())
 
                     print("------------------------------------------------------------------------------------------------------------")
                     print("Question: ",question)

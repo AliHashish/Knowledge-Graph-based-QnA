@@ -37,7 +37,7 @@ class OurModel:
         if dataEntities:
             # data_in_dict = dataEntities[0].to_dict()
             self.export.dumpdata(dataEntities[0])
-            outputAnswer = self.qa.findanswer(str(question), numberOfPairs)
+            outputAnswer = self.qa.findanswer(str(question))
             if outputAnswer == []:
                 return None
             return outputAnswer
