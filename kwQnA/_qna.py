@@ -105,9 +105,10 @@ class QuestionAnswer:
                                 subList.add(answer_subj)
 
 
-                answer_subj = ", ".join(subList)
-                if answer_subj == "":
-                    return "None"
+                # answer_subj = ", ".join(subList)
+                answer_obj = subList
+                if answer_subj == "" or answer_subj == set():
+                    return {"None"}
                 return answer_subj
 
             elif pair[3] == 'what':
@@ -142,9 +143,10 @@ class QuestionAnswer:
                                     answer_subj = loaded[str(i)]["target"]
                                     subList.add(answer_subj)
 
-                answer_obj = ", ".join(subList)
-                if answer_obj == "":
-                    return "None"
+                # answer_obj = ", ".join(subList)
+                answer_obj = subList
+                if answer_obj == "" or answer_obj == set():
+                    return {"None"}
                 return answer_obj
 
             elif pair[4] == 'when':
@@ -171,9 +173,10 @@ class QuestionAnswer:
                                 if loaded[str(i)]["time"] != '':
                                     answer_obj = loaded[str(i)]["time"]
                                     subList.add(answer_obj)
-                answer_obj = ", ".join(subList)
-                if answer_obj == "":
-                    return "None"
+                # answer_obj = ", ".join(subList)
+                answer_obj = subList
+                if answer_obj == "" or answer_obj == set():
+                    return {"None"}
                 return answer_obj
 
             elif pair[5] == 'where':
@@ -199,9 +202,10 @@ class QuestionAnswer:
                             answer_obj = loaded[str(i)]["place"]
                             if answer_obj not in (" ",""):
                                 subList.add(answer_obj)
-                answer_obj = ", ".join(subList)
-                if answer_obj == "":
-                    return "None"
+                # answer_obj = ", ".join(subList)
+                answer_obj = subList
+                if answer_obj == "" or answer_obj == set():
+                    return {"None"}
                 return answer_obj
             elif pair[6] == 'many':
                 subjectQ = pair[0]
@@ -218,13 +222,14 @@ class QuestionAnswer:
                             if loaded[str(i)]["target"] in objectQ or objectQ in loaded[str(i)]["target"]:
                                 answer_obj = loaded[str(i)]["quantity"]
                                 subList.add(answer_obj)
-                answer_obj = ", ".join(subList)
-                if answer_obj == "":
-                    return "None"
+                # answer_obj = ", ".join(subList)
+                answer_obj = subList
+                if answer_obj == "" or answer_obj == set():
+                    return {"None"}
                 return answer_obj
         except:
             pass
-        return "None"
+        return {"None"}
 
 
     def findanswer(self, question, looseConstraints=False):
@@ -240,7 +245,7 @@ class QuestionAnswer:
         pair = p[0]
         
         answer = self.solve(pair, looseConstraints)
-        if answer == "None" and not looseConstraints:
+        if list(answer)[0] == "None" and not looseConstraints:
             return self.solve(pair, True)
         return answer
 
